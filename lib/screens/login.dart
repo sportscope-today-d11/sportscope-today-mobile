@@ -53,10 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 8),
                 const Text(
                   'Explore the latest football news & updates',
-                  style: TextStyle(
-                    color: Color(0xFFD1D5DB),
-                    fontSize: 14,
-                  ),
+                  style: TextStyle(color: Color(0xFFD1D5DB), fontSize: 14),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 48),
@@ -245,13 +242,10 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     try {
-      // TODO: Ganti dengan URL Django Anda
+      // ✅ FIXED: URL updated to 127.0.0.1
       final response = await request.login(
-        "http://localhost:8000/api/auth/login/",
-        {
-          'username': username,
-          'password': password,
-        },
+        "http://127.0.0.1:8000/api/auth/login/",
+        {'username': username, 'password': password},
       );
 
       if (!mounted) return;
@@ -261,8 +255,8 @@ class _LoginScreenState extends State<LoginScreen> {
       });
 
       if (request.loggedIn) {
-        String message = response['message'];
-        String uname = response['username'];
+        String message = response['message'] ?? 'Login successful!';
+        String uname = response['username'] ?? username;
         String role = response['role'] ?? 'user';
 
         Navigator.pushReplacement(
@@ -271,7 +265,7 @@ class _LoginScreenState extends State<LoginScreen> {
             builder: (context) => HomePage(
               username: uname,
               role: role,
-              email: null, // You can add email to response if needed
+              email: null,
             ),
           ),
         );
@@ -289,11 +283,12 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (e) {
       if (!mounted) return;
-      
+
+      print('Login error: $e'); // Debug ke console
       setState(() {
         _isLoading = false;
       });
-      _showErrorDialog('An error occurred. Please try again.');
+      _showErrorDialog('An error occurred:\n${e.toString()}');
     }
   }
 

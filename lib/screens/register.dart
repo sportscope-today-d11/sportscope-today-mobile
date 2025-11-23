@@ -54,10 +54,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 8),
                 const Text(
                   'Create your account to get started',
-                  style: TextStyle(
-                    color: Color(0xFFD1D5DB),
-                    fontSize: 14,
-                  ),
+                  style: TextStyle(color: Color(0xFFD1D5DB), fontSize: 14),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 48),
@@ -301,14 +298,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
 
     try {
-      // TODO: Ganti dengan URL Django Anda
-      final response = await request.postJson(
-        "http://localhost:8000/api/auth/register/",
-        {
-          'username': username,
-          'password1': password1,
-          'password2': password2,
-        },
+      // ✅ FIXED: Ganti postJson jadi post
+      final response = await request.post(
+        "http://127.0.0.1:8000/api/auth/register/",
+        {'username': username, 'password1': password1, 'password2': password2},
       );
 
       if (!mounted) return;
@@ -327,9 +320,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-            builder: (context) => const LoginScreen(),
-          ),
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
         );
       } else {
         _showErrorDialog(response['message'] ?? 'Registration failed');
@@ -337,10 +328,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
     } catch (e) {
       if (!mounted) return;
       
+      print('Register error: $e'); // Debug ke console
       setState(() {
         _isLoading = false;
       });
-      _showErrorDialog('An error occurred. Please try again.');
+      _showErrorDialog('An error occurred:\n${e.toString()}');
     }
   }
 
