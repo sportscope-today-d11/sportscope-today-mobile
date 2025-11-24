@@ -284,7 +284,6 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       if (!mounted) return;
 
-      print('Login error: $e'); // Debug ke console
       setState(() {
         _isLoading = false;
       });

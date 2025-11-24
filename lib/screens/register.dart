@@ -328,7 +328,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     } catch (e) {
       if (!mounted) return;
       
-      print('Register error: $e'); // Debug ke console
       setState(() {
         _isLoading = false;
       });

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/login.dart';
+import 'screens/homepage.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 
@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           fontFamily: 'Lato',
         ),
-        home: const LoginScreen(),
+        home: const HomePage(),
         debugShowCheckedModeBanner: false,
       ),
     );

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
+import 'package:sportscope_today_mobile/screens/homepage.dart';
 import '../screens/login.dart';
+import '../screens/register.dart';
 
 class LeftDrawer extends StatelessWidget {
   final bool isAuthenticated;
@@ -11,11 +13,17 @@ class LeftDrawer extends StatelessWidget {
 
   const LeftDrawer({
     Key? key,
-    required this.isAuthenticated,
+    this.isAuthenticated = false,
     this.username,
     this.email,
     this.role,
   }) : super(key: key);
+
+  // Get single initial from username
+  String _getUserInitial() {
+    if (username == null || username!.isEmpty) return 'U';
+    return username![0].toUpperCase();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +59,7 @@ class LeftDrawer extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
                 children: [
+                  // Main Menu Items (4 modul utama)
                   _buildMenuItem(
                     context,
                     title: 'News',
@@ -66,13 +75,13 @@ class LeftDrawer extends StatelessWidget {
                   ),
                   _buildMenuItem(
                     context,
-                    title: role == 'admin' ? 'Manage Matches' : 'Matches',
+                    title: 'Matches',
                     onTap: () {
                       Navigator.pop(context);
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('${role == 'admin' ? 'Manage ' : ''}Matches page coming soon!'),
-                          backgroundColor: const Color(0xFF052962),
+                        const SnackBar(
+                          content: Text('Matches page coming soon!'),
+                          backgroundColor: Color(0xFF052962),
                         ),
                       );
                     },
@@ -111,7 +120,7 @@ class LeftDrawer extends StatelessWidget {
                     height: 32,
                   ),
 
-                  // Submenu Items
+                  // Submenu Items (Categories)
                   _buildSubmenuItem(
                     context,
                     title: 'Transfer',
@@ -186,7 +195,7 @@ class LeftDrawer extends StatelessWidget {
               ),
             ),
 
-            // Bottom Section
+            // Bottom Section - Auth Buttons
             Container(
               padding: const EdgeInsets.all(24),
               decoration: const BoxDecoration(
@@ -201,7 +210,7 @@ class LeftDrawer extends StatelessWidget {
                 top: false,
                 child: isAuthenticated
                     ? _buildSignOutButton(context, request)
-                    : _buildSignInButton(context),
+                    : _buildAuthButtons(context),
               ),
             ),
           ],
@@ -211,28 +220,37 @@ class LeftDrawer extends StatelessWidget {
   }
 
   Widget _buildUserProfile() {
+    // Capitalize username
+    String displayName = username?.toUpperCase() ?? 'USER';
+    
     return Row(
       children: [
+        // Single initial in gold circle
         Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
+          width: 52,
+          height: 52,
+          decoration: const BoxDecoration(
+            color: Color(0xFFFFD700),
             shape: BoxShape.circle,
-            color: Colors.grey[300],
           ),
-          child: const Icon(
-            Icons.person,
-            size: 28,
-            color: Colors.grey,
+          child: Center(
+            child: Text(
+              _getUserInitial(),
+              style: const TextStyle(
+                color: Color(0xFF052962),
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 14),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                username ?? 'User',
+                displayName,
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 16,
@@ -266,24 +284,38 @@ class LeftDrawer extends StatelessWidget {
   }
 
   Widget _buildWelcomeMessage() {
-    return Column(
+    return const Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: const [
-        Text(
-          'Welcome!',
-          style: TextStyle(
-            color: Color(0xFFFFD700),
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Merriweather',
-          ),
+      children: [
+        Row(
+          children: [
+            Text(
+              'Sportscope',
+              style: TextStyle(
+                color: Color(0xFFFFD700),
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Merriweather',
+              ),
+            ),
+            SizedBox(width: 4),
+            Text(
+              'Today',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Merriweather',
+              ),
+            ),
+          ],
         ),
-        SizedBox(height: 4),
+        SizedBox(height: 6),
         Text(
-          'Explore the latest football news & updates',
+          'Explore football news & updates',
           style: TextStyle(
             color: Color(0xFFD1D5DB),
-            fontSize: 14,
+            fontSize: 13,
           ),
         ),
       ],
@@ -302,7 +334,6 @@ class LeftDrawer extends StatelessWidget {
             color: Colors.white,
             fontSize: 16,
             fontWeight: FontWeight.w500,
-            fontFamily: 'Lato',
           ),
         ),
       ),
@@ -318,46 +349,79 @@ class LeftDrawer extends StatelessWidget {
         child: Text(
           title,
           style: const TextStyle(
-            color: Colors.white,
+            color: Colors.white70,
             fontSize: 14,
-            fontFamily: 'Lato',
           ),
         ),
       ),
     );
   }
 
-  Widget _buildSignInButton(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: () {
-          Navigator.pop(context);
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const LoginScreen(),
+  // Auth buttons for non-authenticated users
+  Widget _buildAuthButtons(BuildContext context) {
+    return Column(
+      children: [
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const LoginScreen(),
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFFFD700),
+              foregroundColor: const Color(0xFF052962),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+              elevation: 0,
             ),
-          );
-        },
-        style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFFFD700),
-          foregroundColor: const Color(0xFF052962),
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(6),
-          ),
-          elevation: 0,
-        ),
-        child: const Text(
-          'Sign In',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            fontFamily: 'Lato',
+            child: const Text(
+              'Sign In',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ),
-      ),
+        const SizedBox(height: 12),
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const RegisterScreen(),
+                ),
+              );
+            },
+            style: OutlinedButton.styleFrom(
+              foregroundColor: const Color(0xFFFFD700),
+              side: const BorderSide(color: Color(0xFFFFD700), width: 1.5),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: const Text(
+              'Sign Up',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -371,18 +435,17 @@ class LeftDrawer extends StatelessWidget {
         },
         style: OutlinedButton.styleFrom(
           foregroundColor: Colors.white,
-          side: const BorderSide(color: Colors.grey),
-          padding: const EdgeInsets.symmetric(vertical: 12),
+          side: const BorderSide(color: Colors.white70),
+          padding: const EdgeInsets.symmetric(vertical: 14),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(6),
+            borderRadius: BorderRadius.circular(8),
           ),
         ),
         child: const Text(
           'Sign Out',
           style: TextStyle(
-            fontSize: 14,
+            fontSize: 15,
             fontWeight: FontWeight.w500,
-            fontFamily: 'Lato',
           ),
         ),
       ),
@@ -403,12 +466,11 @@ class LeftDrawer extends StatelessWidget {
             ),
             TextButton(
               onPressed: () async {
-                Navigator.pop(dialogContext); // Close dialog
+                Navigator.pop(dialogContext);
                 
                 try {
-                  // TODO: Ganti dengan URL Django Anda
                   final response = await request.logout(
-                    "http://localhost:8000/auth/logout/",
+                    "http://127.0.0.1:8000/api/auth/logout/",
                   );
 
                   if (context.mounted) {
@@ -420,11 +482,10 @@ class LeftDrawer extends StatelessWidget {
                         ),
                       );
 
-                      // Navigate to login page and remove all previous routes
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => const LoginScreen(),
+                          builder: (context) => const HomePage(),
                         ),
                         (route) => false,
                       );
@@ -440,8 +501,8 @@ class LeftDrawer extends StatelessWidget {
                 } catch (e) {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('An error occurred during logout'),
+                      SnackBar(
+                        content: Text('Logout error: ${e.toString()}'),
                         backgroundColor: Colors.red,
                       ),
                     );
