@@ -30,11 +30,14 @@ Fitur ini menampilkan rekap hasil pertandingan sebelumnya.
 - Pengguna dapat melihat history by team atau by competition.
 
 ## 4. Forum (Ahmad Omar Mohammed Maknoon)
-Ruang diskusi komunitas yang mirip konsepnya dengan Reddit/Quora.
+Ruang diskusi komunitas yang mirip konsepnya dengan Reddit/Quora. Terdapat 3 jenis forum yang tersedia:
+- Forum General: tempat untuk membahas topik umum seputar olahraga. 
+- Forum by Category: membahas topik spesifik seperti liga tertentu, klub favorit, atau pemain.
+- Forum reply : forum yang membahas suatu artikel atau hasil pertandingan tertentu.
 
-Forum General: tempat untuk membahas topik umum seputar olahraga. 
-Forum by Category: membahas topik spesifik seperti liga tertentu, klub favorit, atau pemain.
-Fitur tambahan: Tombol bookmark untuk menyimpan forum favorit.
+Fitur tambahan: 
+- Tombol bookmark untuk menyimpan forum favorit.
+- Tombol like komentar pada forum.
 
 Peran lain:
 - Membuat fitur autentikasi yang dapat mengenali pengguna berdasarkan rolenya sebagai acuan validasi fitur-fitur khusus.
