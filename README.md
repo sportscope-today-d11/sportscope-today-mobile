@@ -52,10 +52,8 @@ Fiturnya dapat menampilkan data pemain lengkap seperti nama, posisi, tim, dan st
 Admin
 1. Dapat membuat, mengedit, dan menghapus artikel berita olahraga.
 2. Dapat menambahkan dan mengedit history match di halaman terkait.
-3. Dapat membuat, mengomentari, serta menghapus posting di forum.
-4. Dapat melakukan bookmark berita dan forum.
-5. Dapat memperbarui dan menambah tim yang berada di beranda utama.
-6. Dapat memberikan love pada daftar pemain sepak bola.
+3. Dapat menghapus postingan dan komentar di forum (yang melanggar aturan).
+4. Dapat membuat, mengedit, dan menghapus player.
    
 User
 1. Dapat membuat postingan, mengedit postingan yang dibuat, dan mengomentrasi postingan orang lain di forum.
