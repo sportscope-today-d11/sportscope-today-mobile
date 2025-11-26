@@ -12,17 +12,10 @@ Sportscope Today adalah platform majalah olahraga digital interaktif yang menyaj
 Aplikasi ini dirancang untuk menjadi pusat informasi dan interaksi bagi pecinta Liga Premier Inggris maupun penggemar sepak bola secara umum.
 
 # Modul untuk setiap anggota
-## 1. Dashboard (Ahmad Omar Mohammed Maknoon)
+## 1. Dashboard
 Berfungsi sebagai beranda utama yang menampilkan ringkasan konten penting:
+- Welcoming page.
 - Berita sepak bola terbaru.
-- Highlight hasil pertandingan terbaru.
-- Highlight statistik klub Liga Premier Inggris (misalnya komentar baru atau thread populer).
-- Highlight pemain FIFA paling populer saat ini (berdasarkan jumlah like).
-- Tujuan utama dashboard adalah memberikan pengguna akses cepat ke semua pembaruan penting dalam satu tampilan.
-
-Peran lain:
-- Membuat fitur autentikasi yang dapat mengenali pengguna berdasarkan rolenya sebagai acuan validasi fitur-fitur khusus.
-- Membuat CustomAppBar dan Left Drawer sebagai navigasi utama antarmodul pada aplikasi.
 
 ## 2. Halaman News (Renata Gracia Adli)
 Berisi daftar berita olahraga yang disusun berdasarkan kategori atau tanggal rilis. Fitur yang tersedia:
@@ -36,11 +29,16 @@ Fitur ini menampilkan rekap hasil pertandingan sebelumnya.
 - Data mencakup skor akhir pertandingan.
 - Pengguna dapat melihat history by team atau by competition.
 
-## 4. Forum General (Raditya Amoret)
+## 4. Forum (Ahmad Omar Mohammed Maknoon)
 Ruang diskusi komunitas yang mirip konsepnya dengan Reddit/Quora.
 
-Forum General: tempat untuk membahas topik umum seputar olahraga. Forum by Category: membahas topik spesifik seperti liga tertentu, klub favorit, atau pemain.
+Forum General: tempat untuk membahas topik umum seputar olahraga. 
+Forum by Category: membahas topik spesifik seperti liga tertentu, klub favorit, atau pemain.
 Fitur tambahan: Tombol bookmark untuk menyimpan forum favorit.
+
+Peran lain:
+- Membuat fitur autentikasi yang dapat mengenali pengguna berdasarkan rolenya sebagai acuan validasi fitur-fitur khusus.
+- Membuat CustomAppBar dan Left Drawer sebagai navigasi utama antarmodul pada aplikasi.
 
 ## 5. Daftar Pemain FIFA (Chris Darren Imanuel)
 Berisi data dan profil pemain sepak bola dari database FIFA.
@@ -76,5 +74,5 @@ Flutter bertindak sebagai client yang mengonsumsi web service dari Django. Integ
 https://www.figma.com/design/BoAdJpI4ZLFqdBl1l0uvQ9/PAS-D11?node-id=0-1&t=wXlkXAALBu2bCj3N-1 
 
 
-
+last update: 26/11/2025 4 PM due to adjusment in task distribution
 
