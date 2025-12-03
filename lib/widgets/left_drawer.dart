@@ -470,7 +470,7 @@ class LeftDrawer extends StatelessWidget {
                 
                 try {
                   final response = await request.logout(
-                    "http://127.0.0.1:8000/api/auth/logout/",
+                    "https://ahmad-omar-sportscopetoday.pbp.cs.ui.ac.id/api/auth/logout/",
                   );
 
                   if (context.mounted) {

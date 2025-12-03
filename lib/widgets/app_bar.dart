@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sportscope_today_mobile/screens/login.dart';
+import 'package:sportscope_today_mobile/screens/forum_list.dart'; // ⬅️ TAMBAHAN
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String? username;
@@ -182,8 +183,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 _MainMenuItem(
                   label: 'FORUM',
                   onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Forum coming soon!')),
+                    // ⬇️ ROUTING KE HALAMAN FORUM LIST
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const ForumListPage(),
+                      ),
                     );
                   },
                 ),

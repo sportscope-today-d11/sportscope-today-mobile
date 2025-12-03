@@ -65,7 +65,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     try {
       // TODO: sesuaikan base URL kalau perlu
       final response = await request.post(
-        "http://127.0.0.1:8000/api/auth/register/",
+        "https://ahmad-omar-sportscopetoday.pbp.cs.ui.ac.id/api/auth/register/",
         {
           "username": username,
           "password1": password1,
