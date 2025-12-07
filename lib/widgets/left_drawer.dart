@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:sportscope_today_mobile/screens/homepage.dart';
 import '../screens/login.dart';
 import '../screens/register.dart';
+import 'package:sportscope_today_mobile/screens/news_list.dart';
 
 class LeftDrawer extends StatelessWidget {
   final bool isAuthenticated;
@@ -65,10 +66,10 @@ class LeftDrawer extends StatelessWidget {
                     title: 'News',
                     onTap: () {
                       Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('News page coming soon!'),
-                          backgroundColor: Color(0xFF052962),
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const NewsListPage(),
                         ),
                       );
                     },
@@ -126,8 +127,11 @@ class LeftDrawer extends StatelessWidget {
                     title: 'Transfer',
                     onTap: () {
                       Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Transfer section coming soon!')),
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const NewsListPage(category: 'Transfer'),
+                        ),
                       );
                     },
                   ),
@@ -136,8 +140,11 @@ class LeftDrawer extends StatelessWidget {
                     title: 'Injury Update',
                     onTap: () {
                       Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Injury Update section coming soon!')),
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const NewsListPage(category: 'Injury Update'),
+                        ),
                       );
                     },
                   ),
@@ -146,8 +153,11 @@ class LeftDrawer extends StatelessWidget {
                     title: 'Match Result',
                     onTap: () {
                       Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Match Result section coming soon!')),
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const NewsListPage(category: 'Match Result'),
+                        ),
                       );
                     },
                   ),
@@ -156,8 +166,11 @@ class LeftDrawer extends StatelessWidget {
                     title: 'Manager News',
                     onTap: () {
                       Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Manager News section coming soon!')),
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const NewsListPage(category: 'Manager News'),
+                        ),
                       );
                     },
                   ),
@@ -166,8 +179,11 @@ class LeftDrawer extends StatelessWidget {
                     title: 'Thoughts',
                     onTap: () {
                       Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Thoughts section coming soon!')),
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const NewsListPage(category: 'Thoughts'),
+                        ),
                       );
                     },
                   ),
@@ -176,8 +192,11 @@ class LeftDrawer extends StatelessWidget {
                     title: 'Team Statistics',
                     onTap: () {
                       Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Team Statistics section coming soon!')),
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const NewsListPage(category: 'Team Statistics'),
+                        ),
                       );
                     },
                   ),
@@ -186,8 +205,11 @@ class LeftDrawer extends StatelessWidget {
                     title: 'Hits Player',
                     onTap: () {
                       Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Hits Player section coming soon!')),
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const NewsListPage(category: 'Hits Player'),
+                        ),
                       );
                     },
                   ),
