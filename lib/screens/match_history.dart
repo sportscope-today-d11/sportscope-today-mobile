@@ -80,23 +80,27 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
     try {
       var response = await request.get(finalUrl);
 
-      List raw;
+      // ========================
+      //    FIX BAGIAN INI
+      // ========================
+      if (response is Map) {
+        if (response["success"] == true &&
+            response["data"] is List) {
+          List<dynamic> raw = response["data"];
+          List<MatchHistory> parsed =
+          raw.map((e) => MatchHistory.fromJson(e)).toList();
 
-      if (response is List) {
-        raw = response;
-      } else if (response is Map && response["data"] is List) {
-        raw = response["data"];
+          setState(() {
+            history = parsed;
+            loading = false;
+          });
+
+        } else {
+          throw Exception("Unexpected API format: $response");
+        }
       } else {
-        throw Exception("Unexpected API format: $response");
+        throw Exception("API did not return a Map: $response");
       }
-
-      List<MatchHistory> parsed =
-      raw.map((e) => MatchHistory.fromJson(e)).toList();
-
-      setState(() {
-        history = parsed;
-        loading = false;
-      });
     } catch (e) {
       print("ERROR FETCHING HISTORY: $e");
       setState(() => loading = false);
