@@ -3,6 +3,7 @@ import '../widgets/left_drawer.dart';
 import '../widgets/app_bar.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
+import 'match_history.dart';
 
 class HomePage extends StatelessWidget {
   final String? username;
@@ -33,15 +34,34 @@ class HomePage extends StatelessWidget {
         email: email,
         role: role,
       ),
-      body: const Center(
+      body: Center(
         child: Padding(
-          padding: EdgeInsets.all(24.0),
-          child: Text(
-            'Homepage Content Coming Soon',
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.grey,
-            ),
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'Homepage Content Coming Soon',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.grey,
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // === BUTTON MATCH HISTORY ===
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const MatchHistoryPage(),
+                    ),
+                  );
+                },
+                child: const Text("Match History"),
+              ),
+            ],
           ),
         ),
       ),
