@@ -2,36 +2,42 @@ import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 import 'match_detail.dart';
-import 'dart:convert';
+
+// ================= MODEL =================
 
 class MatchHistory {
-  final int id;
+  final String id;
   final String home;
   final String away;
   final String score;
-  final int teamId;
-  final int competitionId;
+  final String season;
+  final String competition;
+  final String date;
 
   MatchHistory({
     required this.id,
     required this.home,
     required this.away,
     required this.score,
-    required this.teamId,
-    required this.competitionId,
+    required this.season,
+    required this.competition,
+    required this.date,
   });
 
   factory MatchHistory.fromJson(Map<String, dynamic> json) {
     return MatchHistory(
-      id: json['id'],
-      home: json['home'],
-      away: json['away'],
-      score: json['score'],
-      teamId: json['team_id'],
-      competitionId: json['competition_id'],
+      id: json['id'].toString(),
+      home: json['home_team'] ?? "",
+      away: json['away_team'] ?? "",
+      score: json['full_time_score'] ?? "-",
+      season: json['season'] ?? "",
+      competition: json['competition'] ?? "",
+      date: json['date'] ?? "",
     );
   }
 }
+
+// ================= PAGE =================
 
 class MatchHistoryPage extends StatefulWidget {
   const MatchHistoryPage({super.key});
@@ -56,34 +62,41 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
   Future<void> fetchHistory() async {
     final request = context.read<CookieRequest>();
 
-    // Base URL backend
-    String baseUrl = "https://ahmad-omar-sportscopetoday.pbp.cs.ui.ac.id/api/matches";
+    String baseUrl =
+        "https://ahmad-omar-sportscopetoday.pbp.cs.ui.ac.id/api/matches";
 
-    // Build query string
     List<String> params = [];
     if (selectedTeamId != null) params.add("team_id=$selectedTeamId");
-    if (selectedCompetitionId != null) params.add("competition_id=$selectedCompetitionId");
+    if (selectedCompetitionId != null) {
+      params.add("competition_id=$selectedCompetitionId");
+    }
 
     String finalUrl = params.isEmpty
         ? baseUrl
-        : "$baseUrl?${params.join('&')}";
+        : "$baseUrl?${params.join("&")}";
 
     print("FETCHING FROM: $finalUrl");
 
     try {
       var response = await request.get(finalUrl);
 
-      // Jika backend return "data"
-      List rawList = response is List ? response : response["data"];
+      List raw;
+
+      if (response is List) {
+        raw = response;
+      } else if (response is Map && response["data"] is List) {
+        raw = response["data"];
+      } else {
+        throw Exception("Unexpected API format: $response");
+      }
 
       List<MatchHistory> parsed =
-      rawList.map((e) => MatchHistory.fromJson(e)).toList();
+      raw.map((e) => MatchHistory.fromJson(e)).toList();
 
       setState(() {
         history = parsed;
         loading = false;
       });
-
     } catch (e) {
       print("ERROR FETCHING HISTORY: $e");
       setState(() => loading = false);
@@ -98,7 +111,7 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
         children: [
           const SizedBox(height: 12),
 
-          // -------------------- FILTER --------------------
+          // --------------- FILTER ---------------
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Row(
@@ -140,26 +153,34 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
 
           const SizedBox(height: 12),
 
-          // -------------------- CONTENT --------------------
+          // --------------- CONTENT ---------------
           Expanded(
             child: loading
                 ? const Center(child: CircularProgressIndicator())
                 : ListView.builder(
               itemCount: history.length,
-              itemBuilder: (context, index) {
-                final m = history[index];
+              itemBuilder: (context, i) {
+                final m = history[i];
                 return Card(
                   margin: const EdgeInsets.all(10),
                   child: ListTile(
                     title: Text("${m.home} vs ${m.away}"),
-                    subtitle: Text("Score: ${m.score}"),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => MatchDetailPage(match: m),
-                      ),
+                    subtitle: Text(
+                      "${m.competition} • ${m.season}\nDate: ${m.date}",
                     ),
+                    trailing: Text(
+                      m.score,
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => MatchDetailPage(match: m),
+                        ),
+                      );
+                    },
                   ),
                 );
               },
