@@ -1,12 +1,10 @@
-// To parse this JSON data, do
-//
-//     final matchEntry = matchEntryFromJson(jsonString);
-
 import 'dart:convert';
 
-List<MatchEntry> matchEntryFromJson(String str) => List<MatchEntry>.from(json.decode(str).map((x) => MatchEntry.fromJson(x)));
+List<MatchEntry> matchEntryFromJson(String str) =>
+    List<MatchEntry>.from(json.decode(str).map((x) => MatchEntry.fromJson(x)));
 
-String matchEntryToJson(List<MatchEntry> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String matchEntryToJson(List<MatchEntry> data) =>
+    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class MatchEntry {
   final String id;

@@ -56,31 +56,38 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
   Future<void> fetchHistory() async {
     final request = context.read<CookieRequest>();
 
-    // ----- Bikin query string manual -----
-    String url = "/api/match_history";
+    // Base URL backend
+    String baseUrl = "https://ahmad-omar-sportscopetoday.pbp.cs.ui.ac.id/api/matches";
+
+    // Build query string
     List<String> params = [];
+    if (selectedTeamId != null) params.add("team_id=$selectedTeamId");
+    if (selectedCompetitionId != null) params.add("competition_id=$selectedCompetitionId");
 
-    if (selectedTeamId != null) {
-      params.add("team_id=${selectedTeamId!}");
+    String finalUrl = params.isEmpty
+        ? baseUrl
+        : "$baseUrl?${params.join('&')}";
+
+    print("FETCHING FROM: $finalUrl");
+
+    try {
+      var response = await request.get(finalUrl);
+
+      // Jika backend return "data"
+      List rawList = response is List ? response : response["data"];
+
+      List<MatchHistory> parsed =
+      rawList.map((e) => MatchHistory.fromJson(e)).toList();
+
+      setState(() {
+        history = parsed;
+        loading = false;
+      });
+
+    } catch (e) {
+      print("ERROR FETCHING HISTORY: $e");
+      setState(() => loading = false);
     }
-    if (selectedCompetitionId != null) {
-      params.add("competition_id=${selectedCompetitionId!}");
-    }
-
-    if (params.isNotEmpty) {
-      url += "?${params.join("&")}";
-    }
-
-    // ----- Call API -----
-    var response = await request.get(url);
-
-    List<MatchHistory> parsed =
-    (response as List).map((e) => MatchHistory.fromJson(e)).toList();
-
-    setState(() {
-      history = parsed;
-      loading = false;
-    });
   }
 
   @override

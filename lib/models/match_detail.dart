@@ -52,16 +52,16 @@ class MatchDetail {
 
   factory MatchDetail.fromJson(Map<String, dynamic> json) {
     return MatchDetail(
-      id: json["id"],
-      season: json["season"],
+      id: json["id"].toString(),
+      season: json["season"] ?? "",
       date: json["date"] != null ? DateTime.tryParse(json["date"]) : null,
-      competition: json["competition"],
-      homeTeam: json["home_team"],
-      homeTeamSlug: json["home_team_slug"],
-      awayTeam: json["away_team"],
-      awayTeamSlug: json["away_team_slug"],
-      fullTimeScore: json["full_time_score"],
-      halfTimeScore: json["half_time_score"],
+      competition: json["competition"] ?? "",
+      homeTeam: json["home_team"] ?? "",
+      homeTeamSlug: json["home_team_slug"] ?? "",
+      awayTeam: json["away_team"] ?? "",
+      awayTeamSlug: json["away_team_slug"] ?? "",
+      fullTimeScore: json["full_time_score"] ?? "",
+      halfTimeScore: json["half_time_score"] ?? "",
 
       shotsHome: json["shots_home"] ?? 0,
       shotsAway: json["shots_away"] ?? 0,
