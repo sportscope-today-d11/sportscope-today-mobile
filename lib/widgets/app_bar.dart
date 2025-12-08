@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sportscope_today_mobile/screens/login.dart';
 import 'package:sportscope_today_mobile/screens/forum_list.dart'; // ⬅️ TAMBAHAN
+import 'package:sportscope_today_mobile/screens/match_history.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String? username;
@@ -157,8 +158,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 _MainMenuItem(
                   label: 'MATCHES',
                   onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Matches coming soon!')),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const MatchHistoryPage()),
                     );
                   },
                 ),

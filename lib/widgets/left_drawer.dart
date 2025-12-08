@@ -5,6 +5,7 @@ import 'package:sportscope_today_mobile/screens/homepage.dart';
 import '../screens/login.dart';
 import '../screens/register.dart';
 import 'package:sportscope_today_mobile/screens/news_list.dart';
+import 'package:sportscope_today_mobile/screens/match_history.dart';
 
 class LeftDrawer extends StatelessWidget {
   final bool isAuthenticated;
@@ -79,10 +80,10 @@ class LeftDrawer extends StatelessWidget {
                     title: 'Matches',
                     onTap: () {
                       Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Matches page coming soon!'),
-                          backgroundColor: Color(0xFF052962),
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const MatchHistoryPage(),
                         ),
                       );
                     },

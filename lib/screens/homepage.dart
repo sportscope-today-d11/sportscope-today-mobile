@@ -48,16 +48,6 @@ class HomePage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 20),
-
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const MatchHistoryPage()),
-                  );
-                },
-                child: const Text("Match History"),
-              ),
             ],
           ),
         ),
