@@ -71,38 +71,29 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
       params.add("competition_id=$selectedCompetitionId");
     }
 
-    String finalUrl = params.isEmpty
-        ? baseUrl
-        : "$baseUrl?${params.join("&")}";
-
-    print("FETCHING FROM: $finalUrl");
+    String finalUrl = params.isEmpty ? baseUrl : "$baseUrl?${params.join("&")}";
 
     try {
       var response = await request.get(finalUrl);
 
-      // ========================
-      //    FIX BAGIAN INI
-      // ========================
-      if (response is Map) {
-        if (response["success"] == true &&
-            response["data"] is List) {
-          List<dynamic> raw = response["data"];
-          List<MatchHistory> parsed =
-          raw.map((e) => MatchHistory.fromJson(e)).toList();
+      List raw;
 
-          setState(() {
-            history = parsed;
-            loading = false;
-          });
-
-        } else {
-          throw Exception("Unexpected API format: $response");
-        }
+      if (response is List) {
+        raw = response;
+      } else if (response is Map && response["data"] is List) {
+        raw = response["data"];
       } else {
-        throw Exception("API did not return a Map: $response");
+        throw Exception("Unexpected API format");
       }
+
+      List<MatchHistory> parsed =
+      raw.map((e) => MatchHistory.fromJson(e)).toList();
+
+      setState(() {
+        history = parsed;
+        loading = false;
+      });
     } catch (e) {
-      print("ERROR FETCHING HISTORY: $e");
       setState(() => loading = false);
     }
   }
