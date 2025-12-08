@@ -56,14 +56,23 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
   Future<void> fetchHistory() async {
     final request = context.read<CookieRequest>();
 
-    Map<String, String> query = {};
-    if (selectedTeamId != null) query["team_id"] = selectedTeamId.toString();
+    // ----- Bikin query string manual -----
+    String url = "/api/match_history";
+    List<String> params = [];
+
+    if (selectedTeamId != null) {
+      params.add("team_id=${selectedTeamId!}");
+    }
     if (selectedCompetitionId != null) {
-      query["competition_id"] = selectedCompetitionId.toString();
+      params.add("competition_id=${selectedCompetitionId!}");
     }
 
-    var response =
-    await request.get("/api/match_history", queryParameters: query);
+    if (params.isNotEmpty) {
+      url += "?${params.join("&")}";
+    }
+
+    // ----- Call API -----
+    var response = await request.get(url);
 
     List<MatchHistory> parsed =
     (response as List).map((e) => MatchHistory.fromJson(e)).toList();
