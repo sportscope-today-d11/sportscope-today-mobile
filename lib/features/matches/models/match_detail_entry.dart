@@ -53,13 +53,12 @@ class MatchDetailEntry {
   });
 
   factory MatchDetailEntry.fromJson(Map<String, dynamic> json) {
-    // Parse score strings
     String fullTimeScore = json["full_time_score"] ?? "0 - 0";
     String halfTimeScore = json["half_time_score"] ?? "0 - 0";
 
     return MatchDetailEntry(
       competition: json["competition"] ?? "Premier League",
-      date: json["date"] ?? "",
+      date: json["date"], // Directly assigning nullable field
       homeTeam: json["home_team"] ?? "",
       awayTeam: json["away_team"] ?? "",
       homeSlug: json["home_team_slug"] ?? "",

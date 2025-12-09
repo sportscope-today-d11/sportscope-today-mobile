@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
+import 'match_detail.dart';
 import '../widgets/match_card.dart';
 
 // ================= MODEL =================
@@ -42,6 +43,14 @@ class MatchHistory {
   }
 }
 
+// Model untuk Team dropdown
+class TeamItem {
+  final String slug;
+  final String name;
+
+  TeamItem({required this.slug, required this.name});
+}
+
 // ================= PAGE =================
 class MatchHistoryPage extends StatefulWidget {
   const MatchHistoryPage({super.key});
@@ -58,12 +67,12 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
   bool loading = true;
   String? error;
 
-  // Mock data untuk dropdown
-  final List<Map<String, dynamic>> teams = [
-    {'slug': 'arsenal', 'name': 'Arsenal'},
-    {'slug': 'chelsea', 'name': 'Chelsea'},
-    {'slug': 'liverpool', 'name': 'Liverpool'},
-    {'slug': 'manchester-united', 'name': 'Manchester United'},
+  // Data untuk dropdown - menggunakan model
+  final List<TeamItem> teams = [
+    TeamItem(slug: 'arsenal', name: 'Arsenal'),
+    TeamItem(slug: 'chelsea', name: 'Chelsea'),
+    TeamItem(slug: 'liverpool', name: 'Liverpool'),
+    TeamItem(slug: 'manchester-united', name: 'Manchester United'),
   ];
 
   final List<String> competitions = [
@@ -88,8 +97,8 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
     try {
       final request = context.read<CookieRequest>();
 
-      String baseUrl =
-          "https://ahmad-omar-sportscopetoday.pbp.cs.ui.ac.id/api/matches";
+      // URL yang benar
+      String baseUrl = "https://ahmad-omar-sportscopetoday.pbp.cs.ui.ac.id/matches/match_history/";
 
       List<String> params = [];
       if (selectedTeamSlug != null) params.add("team_id=$selectedTeamSlug");
@@ -103,18 +112,25 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
 
       var response = await request.get(finalUrl);
 
-      List raw;
+      // Cek header untuk tipe konten
+      if (response is Map && response.containsKey("headers")) {
+        var contentType = response["headers"]["content-type"];
+        print("Content-Type: $contentType");
 
-      if (response is List) {
-        raw = response;
-      } else if (response is Map && response["data"] is List) {
-        raw = response["data"];
-      } else {
-        throw Exception("Unexpected API format");
+        if (contentType != null && contentType.contains("html")) {
+          throw Exception("Server returned HTML instead of JSON. This might be an error page.");
+        }
       }
 
-      List<MatchHistory> parsed =
-      raw.map((e) => MatchHistory.fromJson(e)).toList();
+      // Jika response berupa HTML, tangani
+      if (response is String && response.contains("<!DOCTYPE html>")) {
+        throw Exception("Server returned HTML instead of JSON.");
+      }
+
+      // Parsing respons JSON
+      List raw = (response is List) ? response : (response["data"] is List ? response["data"] : []);
+
+      List<MatchHistory> parsed = raw.map((e) => MatchHistory.fromJson(e)).toList();
 
       setState(() {
         history = parsed;
@@ -122,7 +138,7 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
       });
     } catch (e) {
       setState(() {
-        error = e.toString();
+        error = "Error: $e";
         loading = false;
       });
       print("Error fetching history: $e");
@@ -183,17 +199,17 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                           contentPadding: const EdgeInsets.symmetric(
                               horizontal: 12, vertical: 16),
                         ),
-                        value: selectedTeamSlug,
+                        value: selectedTeamSlug ?? null, // Handle null explicitly
                         isExpanded: true,
                         items: [
-                          const DropdownMenuItem(
+                          const DropdownMenuItem<String>(
                             value: null,
                             child: Text("All Teams"),
                           ),
-                          ...teams.map((team) {
-                            return DropdownMenuItem(
-                              value: team['slug'],
-                              child: Text(team['name']),
+                          ...teams.map<DropdownMenuItem<String>>((team) {
+                            return DropdownMenuItem<String>(
+                              value: team.slug,
+                              child: Text(team.name),
                             );
                           }),
                         ],
@@ -217,12 +233,12 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                         value: selectedCompetition,
                         isExpanded: true,
                         items: [
-                          const DropdownMenuItem(
+                          const DropdownMenuItem<String>(
                             value: null,
                             child: Text("All Competitions"),
                           ),
-                          ...competitions.map((comp) {
-                            return DropdownMenuItem(
+                          ...competitions.map<DropdownMenuItem<String>>((comp) {
+                            return DropdownMenuItem<String>(
                               value: comp,
                               child: Text(comp),
                             );
@@ -278,10 +294,13 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                     color: Colors.red,
                   ),
                   const SizedBox(height: 16),
-                  Text(
-                    "Error: $error",
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.red),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Text(
+                      "Error: $error",
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.red),
+                    ),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
