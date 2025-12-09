@@ -97,8 +97,8 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
     try {
       final request = context.read<CookieRequest>();
 
-      String baseUrl =
-          "https://ahmad-omar-sportscopetoday.pbp.cs.ui.ac.id/api/matches";
+      // URL yang benar
+      String baseUrl = "https://ahmad-omar-sportscopetoday.pbp.cs.ui.ac.id/matches/match_history/";
 
       List<String> params = [];
       if (selectedTeamSlug != null) params.add("team_id=$selectedTeamSlug");
@@ -112,18 +112,25 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
 
       var response = await request.get(finalUrl);
 
-      List raw;
+      // Cek header untuk tipe konten
+      if (response is Map && response.containsKey("headers")) {
+        var contentType = response["headers"]["content-type"];
+        print("Content-Type: $contentType");
 
-      if (response is List) {
-        raw = response;
-      } else if (response is Map && response["data"] is List) {
-        raw = response["data"];
-      } else {
-        throw Exception("Unexpected API format");
+        if (contentType != null && contentType.contains("html")) {
+          throw Exception("Server returned HTML instead of JSON. This might be an error page.");
+        }
       }
 
-      List<MatchHistory> parsed =
-      raw.map((e) => MatchHistory.fromJson(e)).toList();
+      // Jika response berupa HTML, tangani
+      if (response is String && response.contains("<!DOCTYPE html>")) {
+        throw Exception("Server returned HTML instead of JSON.");
+      }
+
+      // Parsing respons JSON
+      List raw = (response is List) ? response : (response["data"] is List ? response["data"] : []);
+
+      List<MatchHistory> parsed = raw.map((e) => MatchHistory.fromJson(e)).toList();
 
       setState(() {
         history = parsed;
@@ -131,7 +138,7 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
       });
     } catch (e) {
       setState(() {
-        error = e.toString();
+        error = "Error: $e";
         loading = false;
       });
       print("Error fetching history: $e");
@@ -192,7 +199,7 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                           contentPadding: const EdgeInsets.symmetric(
                               horizontal: 12, vertical: 16),
                         ),
-                        value: selectedTeamSlug,
+                        value: selectedTeamSlug ?? null, // Handle null explicitly
                         isExpanded: true,
                         items: [
                           const DropdownMenuItem<String>(
