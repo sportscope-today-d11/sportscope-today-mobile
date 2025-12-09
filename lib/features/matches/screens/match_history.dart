@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
+import 'match_detail.dart';
 import '../widgets/match_card.dart';
 
 // ================= MODEL =================
@@ -42,6 +43,14 @@ class MatchHistory {
   }
 }
 
+// Model untuk Team dropdown
+class TeamItem {
+  final String slug;
+  final String name;
+
+  TeamItem({required this.slug, required this.name});
+}
+
 // ================= PAGE =================
 class MatchHistoryPage extends StatefulWidget {
   const MatchHistoryPage({super.key});
@@ -58,12 +67,12 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
   bool loading = true;
   String? error;
 
-  // Mock data untuk dropdown
-  final List<Map<String, dynamic>> teams = [
-    {'slug': 'arsenal', 'name': 'Arsenal'},
-    {'slug': 'chelsea', 'name': 'Chelsea'},
-    {'slug': 'liverpool', 'name': 'Liverpool'},
-    {'slug': 'manchester-united', 'name': 'Manchester United'},
+  // Data untuk dropdown - menggunakan model
+  final List<TeamItem> teams = [
+    TeamItem(slug: 'arsenal', name: 'Arsenal'),
+    TeamItem(slug: 'chelsea', name: 'Chelsea'),
+    TeamItem(slug: 'liverpool', name: 'Liverpool'),
+    TeamItem(slug: 'manchester-united', name: 'Manchester United'),
   ];
 
   final List<String> competitions = [
@@ -186,14 +195,14 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                         value: selectedTeamSlug,
                         isExpanded: true,
                         items: [
-                          const DropdownMenuItem(
+                          const DropdownMenuItem<String>(
                             value: null,
                             child: Text("All Teams"),
                           ),
-                          ...teams.map((team) {
-                            return DropdownMenuItem(
-                              value: team['slug'],
-                              child: Text(team['name']),
+                          ...teams.map<DropdownMenuItem<String>>((team) {
+                            return DropdownMenuItem<String>(
+                              value: team.slug,
+                              child: Text(team.name),
                             );
                           }).toList(),
                         ],
@@ -217,12 +226,12 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                         value: selectedCompetition,
                         isExpanded: true,
                         items: [
-                          const DropdownMenuItem(
+                          const DropdownMenuItem<String>(
                             value: null,
                             child: Text("All Competitions"),
                           ),
-                          ...competitions.map((comp) {
-                            return DropdownMenuItem(
+                          ...competitions.map<DropdownMenuItem<String>>((comp) {
+                            return DropdownMenuItem<String>(
                               value: comp,
                               child: Text(comp),
                             );
@@ -278,10 +287,13 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                     color: Colors.red,
                   ),
                   const SizedBox(height: 16),
-                  Text(
-                    "Error: $error",
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.red),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Text(
+                      "Error: $error",
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.red),
+                    ),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton(
