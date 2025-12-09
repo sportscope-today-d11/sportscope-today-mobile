@@ -195,7 +195,7 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                               value: team['slug'],
                               child: Text(team['name']),
                             );
-                          }).toList(),
+                          }),
                         ],
                         onChanged: (value) {
                           setState(() => selectedTeamSlug = value);

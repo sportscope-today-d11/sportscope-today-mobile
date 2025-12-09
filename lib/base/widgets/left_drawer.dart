@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:sportscope_today_mobile/base/screens/homepage.dart';
-import '../../authentication/screens/login.dart';
-import '../../authentication/screens/register.dart';
+import '../../authentication/login.dart';
+import '../../authentication/register.dart';
 import 'package:sportscope_today_mobile/features/news/screens/news_list.dart';
 import 'package:sportscope_today_mobile/features/matches/screens/match_history.dart';
 

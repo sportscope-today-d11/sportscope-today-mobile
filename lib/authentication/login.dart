@@ -2,28 +2,29 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
-import 'package:sportscope_today_mobile/authentication/screens/login.dart';
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+import 'package:sportscope_today_mobile/authentication/register.dart';
+import 'package:sportscope_today_mobile/base/screens/homepage.dart';
+import '../api_config.dart'; // ⬅️ pakai ApiConfig
+
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _password1Controller = TextEditingController();
-  final TextEditingController _password2Controller = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   bool _isLoading = false;
-  bool _obscurePassword1 = true;
-  bool _obscurePassword2 = true;
+  bool _obscurePassword = true;
 
   // Typing animation
-  final String _fullWelcomeText = "Create your Sportscope account";
+  final String _fullWelcomeText = "Welcome back to Sportscope Today";
   String _displayedWelcomeText = "";
   int _welcomeIndex = 0;
   Timer? _typingTimer;
@@ -51,52 +52,71 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
   }
 
-  Future<void> _handleRegister(CookieRequest request) async {
+  Future<void> _handleLogin(CookieRequest request) async {
     if (!_formKey.currentState!.validate()) return;
 
     final username = _usernameController.text.trim();
-    final password1 = _password1Controller.text;
-    final password2 = _password2Controller.text;
+    final password = _passwordController.text.trim();
 
     setState(() {
       _isLoading = true;
     });
 
     try {
-      final response = await request.post(
-        "http://127.0.0.1:8000/api/auth/register/",
+      final loginUrl = '${ApiConfig.authBase}/login/';
+
+      final response = await request.login(
+        loginUrl,
         {
           "username": username,
-          "password1": password1,
-          "password2": password2,
+          "password": password,
         },
       );
 
       if (!mounted) return;
 
       if (response['status'] == true) {
+        final String uname = response['username'] ?? username;
+        final String role = response['role'] ?? 'user';
+        final String? sessionId = response['sessionid'];
+
+        // 🔐 Simpan info user di CookieRequest.jsonData (in-memory session)
+        request.jsonData['username'] = uname;
+        request.jsonData['role'] = role;
+        if (sessionId != null) {
+          request.jsonData['sessionid'] = sessionId;
+        }
+        // Catatan: cookie sessionid sudah otomatis disimpan oleh CookieRequest.
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content:
-                Text(response['message'] ?? 'Registrasi berhasil, silakan login.'),
+            content: Text(response['message'] ?? 'Login berhasil.'),
             behavior: SnackBarBehavior.floating,
           ),
         );
 
-        Navigator.pushReplacement(
+        Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
-            builder: (_) => const LoginScreen(),
+            builder: (context) => HomePage(
+              username: uname,
+              role: role,
+              email: null,
+            ),
           ),
+          (route) => false,
         );
       } else {
         _showErrorDialog(
-          response['message'] ?? 'Registrasi gagal. Silakan cek kembali isian Anda.',
+          response['message'] ??
+              'Login gagal. Periksa kembali kredensial Anda.',
         );
       }
     } catch (e) {
       if (!mounted) return;
-      _showErrorDialog('Terjadi kesalahan saat registrasi.\n$e');
+      _showErrorDialog(
+        'Terjadi kesalahan saat login. Silakan coba lagi.\n$e',
+      );
     } finally {
       if (mounted) {
         setState(() {
@@ -111,7 +131,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text(
-          'Registrasi Gagal',
+          'Login Gagal',
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
         content: Text(message),
@@ -132,8 +152,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void dispose() {
     _typingTimer?.cancel();
     _usernameController.dispose();
-    _password1Controller.dispose();
-    _password2Controller.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
@@ -161,17 +180,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: Card(
                 elevation: 10,
                 shape: RoundedRectangleBorder(
-                  borderRadius: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24),
-                  ).borderRadius,
+                  borderRadius: BorderRadius.circular(24),
                 ),
                 child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 28),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 28,
+                  ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Icon / logo
+                      // Logo / Icon
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
@@ -179,14 +198,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: const Icon(
-                          Icons.person_add_outlined,
-                          size: 32,
+                          Icons.sports_soccer_outlined,
+                          size: 36,
                           color: Colors.white,
                         ),
                       ),
                       const SizedBox(height: 16),
 
-                      // Typing text
+                      // Typing Welcome Text
                       AnimatedSwitcher(
                         duration: const Duration(milliseconds: 200),
                         child: Text(
@@ -202,8 +221,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                       const SizedBox(height: 4),
                       const Text(
-                        "Lengkapi data di bawah untuk membuat akun baru.",
-                        textAlign: TextAlign.center,
+                        "Silakan masuk untuk melanjutkan",
                         style: TextStyle(
                           fontSize: 13,
                           color: Colors.black54,
@@ -212,6 +230,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                       const SizedBox(height: 28),
 
+                      // Form
                       Form(
                         key: _formKey,
                         child: Column(
@@ -236,8 +255,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             const SizedBox(height: 16),
                             TextFormField(
-                              controller: _password1Controller,
-                              obscureText: _obscurePassword1,
+                              controller: _passwordController,
+                              obscureText: _obscurePassword,
                               decoration: InputDecoration(
                                 labelText: 'Password',
                                 prefixIcon: const Icon(Icons.lock_outline),
@@ -246,18 +265,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ),
                                 suffixIcon: IconButton(
                                   icon: Icon(
-                                    _obscurePassword1
+                                    _obscurePassword
                                         ? Icons.visibility_off_outlined
                                         : Icons.visibility_outlined,
                                   ),
                                   onPressed: () {
                                     setState(() {
-                                      _obscurePassword1 = !_obscurePassword1;
+                                      _obscurePassword = !_obscurePassword;
                                     });
                                   },
                                 ),
                               ),
-                              textInputAction: TextInputAction.next,
+                              textInputAction: TextInputAction.done,
+                              onFieldSubmitted: (_) =>
+                                  _handleLogin(request), // enter to login
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Password tidak boleh kosong';
@@ -268,46 +289,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 return null;
                               },
                             ),
-                            const SizedBox(height: 16),
-                            TextFormField(
-                              controller: _password2Controller,
-                              obscureText: _obscurePassword2,
-                              decoration: InputDecoration(
-                                labelText: 'Konfirmasi Password',
-                                prefixIcon: const Icon(Icons.lock_reset_outlined),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                suffixIcon: IconButton(
-                                  icon: Icon(
-                                    _obscurePassword2
-                                        ? Icons.visibility_off_outlined
-                                        : Icons.visibility_outlined,
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      _obscurePassword2 = !_obscurePassword2;
-                                    });
-                                  },
-                                ),
-                              ),
-                              textInputAction: TextInputAction.done,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Konfirmasi password tidak boleh kosong';
-                                }
-                                if (value != _password1Controller.text) {
-                                  return 'Password tidak sama';
-                                }
-                                return null;
-                              },
-                            ),
                           ],
                         ),
                       ),
 
                       const SizedBox(height: 24),
 
+                      // Login Button
                       SizedBox(
                         width: double.infinity,
                         child: FilledButton(
@@ -318,7 +306,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           ),
                           onPressed:
-                              _isLoading ? null : () => _handleRegister(request),
+                              _isLoading ? null : () => _handleLogin(request),
                           child: _isLoading
                               ? const SizedBox(
                                   height: 20,
@@ -330,7 +318,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   ),
                                 )
                               : const Text(
-                                  'Daftar',
+                                  'Masuk',
                                   style: TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w600,
@@ -341,24 +329,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                       const SizedBox(height: 16),
 
+                      // Register Link
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const Text(
-                            "Sudah punya akun? ",
+                            "Belum punya akun? ",
                             style: TextStyle(fontSize: 13),
                           ),
                           TextButton(
                             onPressed: () {
-                              Navigator.pushReplacement(
+                              Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) => const LoginScreen(),
+                                  builder: (_) => const RegisterScreen(),
                                 ),
                               );
                             },
                             child: const Text(
-                              'Masuk di sini',
+                              'Daftar sekarang',
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
@@ -366,7 +355,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           ),
                         ],
-                      )
+                      ),
                     ],
                   ),
                 ),

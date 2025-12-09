@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
+
 import '../widgets/forum_card.dart';
 import '../widgets/comment_card.dart';
 import '../models/comment_entry.dart';
 import '../models/forum_entry.dart';
+import '../../../api_config.dart';
 
 class ForumDetailPage extends StatefulWidget {
   final String forumId;
@@ -49,8 +51,8 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
     final request = context.read<CookieRequest>();
 
     try {
-      final res = await request
-          .get('https://ahmad-omar-sportscopetoday.pbp.cs.ui.ac.id/api/forum/${widget.forumId}/');
+      final url = '${ApiConfig.forumBase}/${widget.forumId}/';
+      final res = await request.get(url);
 
       if (!mounted) return;
 
@@ -80,8 +82,8 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
     final request = context.read<CookieRequest>();
 
     try {
-      final res = await request
-          .get('https://ahmad-omar-sportscopetoday.pbp.cs.ui.ac.id/api/forum/${widget.forumId}/comments/');
+      final url = '${ApiConfig.forumBase}/${widget.forumId}/comments/';
+      final res = await request.get(url);
 
       if (!mounted) return;
 
@@ -89,8 +91,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
         final List<dynamic> list = res['comments'] ?? [];
         setState(() {
           _comments = list
-              .map((e) =>
-                  ForumComment.fromJson(e as Map<String, dynamic>))
+              .map((e) => ForumComment.fromJson(e as Map<String, dynamic>))
               .toList();
           _isLoadingComments = false;
         });
@@ -110,21 +111,20 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
   }
 
   Future<void> _sendComment() async {
-    if (_commentController.text.trim().isEmpty) return;
+    final text = _commentController.text.trim();
+    if (text.isEmpty) return;
 
     final request = context.read<CookieRequest>();
-    final body = {
-      'text': _commentController.text.trim(),
+    final body = <String, dynamic>{
+      'text': text,
     };
     if (_replyTarget != null) {
       body['reply_to_comment_id'] = _replyTarget!.id;
     }
 
     try {
-      final res = await request.post(
-        'https://ahmad-omar-sportscopetoday.pbp.cs.ui.ac.id/api/forum/${widget.forumId}/add-comment/',
-        body,
-      );
+      final url = '${ApiConfig.forumBase}/${widget.forumId}/add-comment/';
+      final res = await request.post(url, body);
 
       if (!mounted) return;
 
@@ -135,7 +135,8 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(res['message']?.toString() ?? 'Gagal mengirim komentar'),
+            content:
+                Text(res['message']?.toString() ?? 'Gagal mengirim komentar'),
           ),
         );
       }
@@ -233,7 +234,7 @@ class _ForumDetailPageState extends State<ForumDetailPage> {
                           ),
                         ],
                       ),
-                    )
+                    ),
                   ],
                 ),
     );

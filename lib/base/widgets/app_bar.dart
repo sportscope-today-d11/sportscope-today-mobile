@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sportscope_today_mobile/authentication/screens/login.dart';
+import 'package:sportscope_today_mobile/authentication/login.dart';
 import 'package:sportscope_today_mobile/features/forum/screens/forum_list.dart'; // ⬅️ TAMBAHAN
 import 'package:sportscope_today_mobile/features/matches/screens/match_history.dart';
 

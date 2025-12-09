@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
+import '../../../api_config.dart';
 
 class FormForumPage extends StatefulWidget {
   const FormForumPage({super.key});
@@ -34,7 +35,7 @@ class _FormForumPageState extends State<FormForumPage> {
 
     setState(() => _isSubmitting = true);
 
-    final body = {
+    final body = <String, String>{
       'title': _titleController.text.trim(),
       'content': _contentController.text.trim(),
     };
@@ -47,10 +48,8 @@ class _FormForumPageState extends State<FormForumPage> {
     }
 
     try {
-      final res = await request.post(
-        'https://ahmad-omar-sportscopetoday.pbp.cs.ui.ac.id/api/forum/add-forum/',
-        body,
-      );
+      final url = '${ApiConfig.forumBase}/add-forum/';
+      final res = await request.post(url, body);
 
       if (!mounted) return;
       setState(() => _isSubmitting = false);
@@ -62,7 +61,11 @@ class _FormForumPageState extends State<FormForumPage> {
         Navigator.pop(context, true);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(res['message']?.toString() ?? 'Gagal membuat forum')),
+          SnackBar(
+            content: Text(
+              res['message']?.toString() ?? 'Gagal membuat forum',
+            ),
+          ),
         );
       }
     } catch (e) {
@@ -92,7 +95,9 @@ class _FormForumPageState extends State<FormForumPage> {
                   labelText: 'Judul',
                 ),
                 validator: (val) =>
-                    (val == null || val.trim().isEmpty) ? 'Judul wajib diisi' : null,
+                    (val == null || val.trim().isEmpty)
+                        ? 'Judul wajib diisi'
+                        : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -102,7 +107,9 @@ class _FormForumPageState extends State<FormForumPage> {
                 ),
                 maxLines: 6,
                 validator: (val) =>
-                    (val == null || val.trim().isEmpty) ? 'Isi forum wajib diisi' : null,
+                    (val == null || val.trim().isEmpty)
+                        ? 'Isi forum wajib diisi'
+                        : null,
               ),
               const SizedBox(height: 12),
               TextFormField(

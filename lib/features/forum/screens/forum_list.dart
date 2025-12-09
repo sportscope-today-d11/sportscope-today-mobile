@@ -7,6 +7,8 @@ import '../widgets/forum_card.dart';
 import 'forum_detail.dart';
 import 'form_forum_page.dart';
 import '../models/forum_entry.dart';
+import '../../../api_config.dart';
+
 
 class ForumListPage extends StatefulWidget {
   const ForumListPage({super.key});
@@ -20,7 +22,7 @@ class _ForumListPageState extends State<ForumListPage> {
   String? _error;
   List<Forum> _forums = [];
 
-  static const String baseUrl = "http://127.0.0.1:8000/api/forum/";
+  static const String baseUrl = '${ApiConfig.forumBase}/';
 
   @override
   void initState() {
