@@ -185,7 +185,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 _MainMenuItem(
                   label: 'FORUM',
                   onPressed: () {
-                    // ⬇️ ROUTING KE HALAMAN FORUM LIST
+                    // ROUTING KE HALAMAN FORUM LIST
                     Navigator.push(
                       context,
                       MaterialPageRoute(

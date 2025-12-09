@@ -21,6 +21,8 @@ class _ForumListPageState extends State<ForumListPage> {
   String? _error;
   List<Forum> _forums = [];
 
+  static const String baseUrl = "http://127.0.0.1:8000/api/forum/";
+
   @override
   void initState() {
     super.initState();
@@ -36,14 +38,14 @@ class _ForumListPageState extends State<ForumListPage> {
     final request = context.read<CookieRequest>();
 
     try {
-      final response =
-          await request.get('https://ahmad-omar-sportscopetoday.pbp.cs.ui.ac.id/api/forum/forums/');
+      final response = await request.get("${baseUrl}forums/");
 
       final List<dynamic> forumsJson = response['forums'] ?? [];
 
       setState(() {
-        _forums =
-            forumsJson.map((e) => Forum.fromJson(e as Map<String, dynamic>)).toList();
+        _forums = forumsJson
+            .map((e) => Forum.fromJson(e as Map<String, dynamic>))
+            .toList();
         _isLoading = false;
       });
     } catch (e) {
@@ -58,9 +60,10 @@ class _ForumListPageState extends State<ForumListPage> {
     final request = context.read<CookieRequest>();
     try {
       final res = await request.post(
-        'https://ahmad-omar-sportscopetoday.pbp.cs.ui.ac.id/api/forum/like/',
+        "${baseUrl}like/",
         {'forum_id': forum.id},
       );
+
       if (!mounted) return;
 
       setState(() {
@@ -91,9 +94,10 @@ class _ForumListPageState extends State<ForumListPage> {
     final request = context.read<CookieRequest>();
     try {
       final res = await request.post(
-        'https://ahmad-omar-sportscopetoday.pbp.cs.ui.ac.id/api/forum/add-bookmart/',
+        "${baseUrl}add-bookmart/",
         {'forum_id': forum.id},
       );
+
       if (!mounted) return;
 
       setState(() {
@@ -123,9 +127,10 @@ class _ForumListPageState extends State<ForumListPage> {
   @override
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
-    final isAuthenticated = request.loggedIn;
-    final username = request.jsonData['username'] as String?;
-    final role = request.jsonData['role'] as String?;
+
+    final bool isAuthenticated = request.loggedIn;
+    final String? username = request.jsonData['username'] as String?;
+    final String? role = request.jsonData['role'] as String?;
 
     return Scaffold(
       appBar: CustomAppBar(
@@ -163,26 +168,30 @@ class _ForumListPageState extends State<ForumListPage> {
                                 ),
                               );
                             },
-                            onLike: () => _toggleLike(forum),
-                            onBookmark: () => _toggleBookmark(forum),
+                            onLike: isAuthenticated
+                                ? () => _toggleLike(forum)
+                                : null,
+                            onBookmark: isAuthenticated
+                                ? () => _toggleBookmark(forum)
+                                : null,
                           );
                         },
                       ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          final created = await Navigator.push<bool>(
-            context,
-            MaterialPageRoute(
-              builder: (_) => const FormForumPage(),
-            ),
-          );
-          if (created == true) {
-            _loadForums();
-          }
-        },
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: isAuthenticated
+          ? FloatingActionButton(
+              onPressed: () async {
+                final created = await Navigator.push<bool>(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const FormForumPage(),
+                  ),
+                );
+                if (created == true) _loadForums();
+              },
+              child: const Icon(Icons.add),
+            )
+          : null,
     );
   }
 }

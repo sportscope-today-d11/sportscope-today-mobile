@@ -63,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       // TODO: sesuaikan base URL kalau perlu
       final response = await request.login(
-        "https://ahmad-omar-sportscopetoday.pbp.cs.ui.ac.id/api/auth/login/",
+        "http://127.0.0.1:8000/api/auth/login/",
         {
           "username": username,
           "password": password,
