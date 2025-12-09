@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:sportscope_today_mobile/screens/login.dart';
-import 'package:sportscope_today_mobile/screens/forum_list.dart'; // ⬅️ TAMBAHAN
-import 'package:sportscope_today_mobile/screens/match_history.dart';
+import 'package:sportscope_today_mobile/authentication/screens/login.dart';
+import 'package:sportscope_today_mobile/features/forum/screens/forum_list.dart'; // ⬅️ TAMBAHAN
+import 'package:sportscope_today_mobile/features/matches/screens/match_history.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String? username;

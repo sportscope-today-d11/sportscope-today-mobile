@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
-
 import '../widgets/forum_card.dart';
 import '../widgets/comment_card.dart';
 import '../models/comment_entry.dart';

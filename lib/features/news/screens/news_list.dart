@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 
-import '../widgets/app_bar.dart';
-import '../widgets/left_drawer.dart';
+import '../../../base/widgets/app_bar.dart';
+import '../../../base/widgets/left_drawer.dart';
 import '../widgets/news_card.dart';
 import '../models/news_entry.dart';
 import 'news_detail.dart';
