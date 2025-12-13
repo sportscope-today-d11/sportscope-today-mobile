@@ -44,7 +44,10 @@ class _MatchDetailPageState extends State<MatchDetailPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Match Detail"),
+        title: const Text(
+          "Match Detail",
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: const Color(0xff052962),
       ),
       body: loading
