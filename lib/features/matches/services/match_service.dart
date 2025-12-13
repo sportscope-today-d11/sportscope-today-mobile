@@ -10,21 +10,19 @@ Future<MatchDetailEntry> fetchMatchDetailEntry(
   final request = context.read<CookieRequest>();
 
   final url =
-      "https://ahmad-omar-sportscopetoday.pbp.cs.ui.ac.id/api/matches/$id/";
-
-  print("FETCHING URL: $url");
+      "http://127.0.0.1:8000/api/matches/$id/";
 
   try {
     final response = await request.get(url);
-    print("API RESPONSE: $response");
 
-    if (response is Map<String, dynamic>) {
-      return MatchDetailEntry.fromJson(response);
-    } else {
-      throw Exception("Invalid response format");
+    if (response is! Map<String, dynamic>) {
+      throw Exception("Invalid JSON format");
     }
+
+    return MatchDetailEntry.fromJson(response);
   } catch (e) {
-    print("ERROR FETCH DETAIL: $e");
-    throw Exception("Failed to load match details: $e");
+    debugPrint("DETAIL ERROR: $e");
+    rethrow;
   }
 }
+

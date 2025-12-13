@@ -97,40 +97,35 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
     try {
       final request = context.read<CookieRequest>();
 
-      // URL yang benar
-      String baseUrl = "https://ahmad-omar-sportscopetoday.pbp.cs.ui.ac.id/matches/match_history/";
+      String baseUrl =
+          "http://127.0.0.1:8000/api/matches/";
 
-      List<String> params = [];
-      if (selectedTeamSlug != null) params.add("team_id=$selectedTeamSlug");
+      final params = <String, String>{};
+
+      if (selectedTeamSlug != null) {
+        params["team_id"] = selectedTeamSlug!;
+      }
+
       if (selectedCompetition != null) {
-        params.add("competition=$selectedCompetition");
+        params["competition_id"] = selectedCompetition!;
       }
 
-      String finalUrl = params.isEmpty ? baseUrl : "$baseUrl?${params.join("&")}";
+      final uri = Uri.parse(baseUrl).replace(queryParameters: params);
 
-      print("Fetching: $finalUrl");
+      print("FETCHING: $uri");
 
-      var response = await request.get(finalUrl);
+      final response = await request.get(uri.toString());
 
-      // Cek header untuk tipe konten
-      if (response is Map && response.containsKey("headers")) {
-        var contentType = response["headers"]["content-type"];
-        print("Content-Type: $contentType");
-
-        if (contentType != null && contentType.contains("html")) {
-          throw Exception("Server returned HTML instead of JSON. This might be an error page.");
-        }
+      // 🔥 VALIDASI RESPONSE
+      if (response is! List) {
+        throw Exception(
+          "Expected List JSON, got ${response.runtimeType}",
+        );
       }
 
-      // Jika response berupa HTML, tangani
-      if (response is String && response.contains("<!DOCTYPE html>")) {
-        throw Exception("Server returned HTML instead of JSON.");
-      }
-
-      // Parsing respons JSON
-      List raw = (response is List) ? response : (response["data"] is List ? response["data"] : []);
-
-      List<MatchHistory> parsed = raw.map((e) => MatchHistory.fromJson(e)).toList();
+      final parsed = response
+          .map<MatchHistory>((e) => MatchHistory.fromJson(e))
+          .toList();
 
       setState(() {
         history = parsed;
@@ -138,10 +133,10 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
       });
     } catch (e) {
       setState(() {
-        error = "Error: $e";
+        error = e.toString();
         loading = false;
       });
-      print("Error fetching history: $e");
+      debugPrint("FETCH HISTORY ERROR: $e");
     }
   }
 
@@ -149,7 +144,10 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Match History"),
+        title: const Text(
+          "Match History",
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: const Color(0xff052962),
       ),
       body: Column(
@@ -190,7 +188,7 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                 Row(
                   children: [
                     Expanded(
-                      child: DropdownButtonFormField<String>(
+                      child: DropdownButtonFormField<String?>(
                         decoration: InputDecoration(
                           labelText: "Team",
                           border: OutlineInputBorder(
@@ -199,19 +197,19 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                           contentPadding: const EdgeInsets.symmetric(
                               horizontal: 12, vertical: 16),
                         ),
-                        value: selectedTeamSlug ?? null, // Handle null explicitly
+                        value: selectedTeamSlug,
                         isExpanded: true,
                         items: [
-                          const DropdownMenuItem<String>(
+                          const DropdownMenuItem<String?>(
                             value: null,
                             child: Text("All Teams"),
                           ),
-                          ...teams.map<DropdownMenuItem<String>>((team) {
-                            return DropdownMenuItem<String>(
+                          ...teams.map(
+                                (team) => DropdownMenuItem<String?>(
                               value: team.slug,
                               child: Text(team.name),
-                            );
-                          }),
+                            ),
+                          ),
                         ],
                         onChanged: (value) {
                           setState(() => selectedTeamSlug = value);
@@ -221,7 +219,7 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: DropdownButtonFormField<String>(
+                      child: DropdownButtonFormField<String?>(
                         decoration: InputDecoration(
                           labelText: "Competition",
                           border: OutlineInputBorder(
@@ -233,16 +231,16 @@ class _MatchHistoryPageState extends State<MatchHistoryPage> {
                         value: selectedCompetition,
                         isExpanded: true,
                         items: [
-                          const DropdownMenuItem<String>(
+                          const DropdownMenuItem<String?>(
                             value: null,
                             child: Text("All Competitions"),
                           ),
-                          ...competitions.map<DropdownMenuItem<String>>((comp) {
-                            return DropdownMenuItem<String>(
+                          ...competitions.map(
+                                (comp) => DropdownMenuItem<String?>(
                               value: comp,
                               child: Text(comp),
-                            );
-                          }).toList(),
+                            ),
+                          ),
                         ],
                         onChanged: (value) {
                           setState(() => selectedCompetition = value);
